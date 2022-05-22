@@ -5,7 +5,7 @@ const User = require("../models/User");
 const auth = async (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
-    throw new UnauthenticatedError("Failed to get auth header");
+    throw new UnauthenticatedError("Failed to get auth header : " + authHeader);
   }
 
   const token = authHeader.split(" ")[1];
