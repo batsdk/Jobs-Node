@@ -3,6 +3,9 @@ require("express-async-errors");
 const express = require("express");
 const app = express();
 
+// Middleware
+const authMiddleware = require("./middleware/authentication");
+
 // ConnectDB
 const connectDB = require("./db/connect");
 
@@ -19,7 +22,7 @@ app.use(express.json());
 
 // routes
 app.use("/auth", authRouter);
-app.use("/jobs", jobsRouter);
+app.use("/jobs", authMiddleware, jobsRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
@@ -29,7 +32,7 @@ const port = process.env.PORT || 3000;
 const start = async () => {
   try {
     connectDB(process.env.MONGO_URI);
-    app.listen(port, () => console.log(`Video 14 ${port}...`));
+    app.listen(port, () => console.log(`Listening on Port ${port}...`));
   } catch (error) {
     console.log(error);
   }
