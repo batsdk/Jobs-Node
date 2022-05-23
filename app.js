@@ -1,7 +1,12 @@
 require("dotenv").config();
 require("express-async-errors");
+
 const express = require("express");
 const app = express();
+const helmet = require("helmet");
+const cors = require("cors");
+const xss = require("xss-clean");
+const rateLimiter = require("express-rate-limit");
 
 // Middleware
 const authMiddleware = require("./middleware/authentication");
@@ -16,9 +21,19 @@ const jobsRouter = require("./routes/jobs");
 // error handler
 const notFoundMiddleware = require("./middleware/not-found");
 const errorHandlerMiddleware = require("./middleware/error-handler");
+const RateLimit = require("express-rate-limit");
 
+app.set("trust proxy", 1);
+app.use(
+  rateLimiter({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // 100 req for IP per window
+  })
+);
 app.use(express.json());
-// extra packages
+app.use(helmet());
+app.use(cors());
+app.use(xss());
 
 // routes
 app.use("/auth", authRouter);
